@@ -3,74 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#4CAF50">
     <title>QR Code Scanner PWA</title>
-
-    <!-- Link to the Manifest file -->
-    <link rel="manifest" href="/manifest.json">
-
-    <!-- Add some basic styling -->
+    
+    <!-- Manifest file for PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Basic styling (optional) -->
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        h1 {
-            color: #4CAF50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
         }
         #qr-reader {
-            width: 100%;
+            width: 300px;
             height: 300px;
-            margin-bottom: 20px;
-        }
-        #qr-result {
-            font-size: 20px;
             margin-top: 20px;
-            color: #333;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Scan QR Code</h1>
 
-    <!-- QR Code scanner view -->
+    <h1>QR Code Scanner</h1>
+
+    <!-- Button to start scanning -->
+    <button id="start-scan-btn">Start QR Scan</button>
+
+    <!-- QR reader div where the camera feed will appear -->
     <div id="qr-reader"></div>
 
-    <!-- Display scanned result -->
-    <div id="qr-result">Scan a QR Code to see the raw text.</div>
+    <!-- Result div to display the scanned text -->
+    <div id="result">Scanned text will appear here</div>
 
-    <!-- Include the html5-qrcode library -->
+    <!-- Link to the html5-qrcode library (you can use a CDN or local file) -->
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 
+    <!-- QR Code scanner logic -->
     <script>
-        // Initialize the QR Code scanner
-        function onScanSuccess(decodedText, decodedResult) {
-            // Display the raw decoded text
-            document.getElementById('qr-result').innerText = `Decoded Text: ${decodedText}`;
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const qrCodeReader = new Html5Qrcode("qr-reader");
 
-        function onScanFailure(error) {
-            console.warn(`QR scan error: ${error}`);
-        }
+            function onScanSuccess(decodedText, decodedResult) {
+                // Display the result in the result div
+                document.getElementById("result").textContent = `Scanned Text: ${decodedText}`;
+                qrCodeReader.stop(); // Stop the scanner after a successful scan
+            }
 
-        // Create QR code reader
-        const qrCodeReader = new Html5Qrcode("qr-reader");
-        
-        // Start scanning
-        qrCodeReader.start(
-            { facingMode: "environment" }, 
-            {
-                fps: 10,    // Frames per second
-                qrbox: 250  // Size of the scanning box
-            },
-            onScanSuccess,
-            onScanFailure
-        );
+            function onScanFailure(error) {
+                // Optionally handle scan errors here
+                console.warn(`QR Code scan error: ${error}`);
+            }
 
-        // Stop scanning after a short time (optional)
-        setTimeout(() => qrCodeReader.stop(), 30000); // Stop after 30 seconds
+            function startScanner() {
+                // Request camera access and start the QR code scanner
+                qrCodeReader.start(
+                    { facingMode: "environment" }, // Use the back camera on mobile devices
+                    { fps: 10, qrbox: 250 },       // Frames per second and scanning box size
+                    onScanSuccess,                 // Success callback
+                    onScanFailure                  // Error callback
+                ).catch(error => {
+                    console.error("Camera start failed:", error);
+                    alert("Failed to access the camera. Please check permissions.");
+                });
+            }
+
+            // Start scanner on button click
+            document.getElementById("start-scan-btn").addEventListener("click", startScanner);
+        });
     </script>
+
 </body>
 </html>
