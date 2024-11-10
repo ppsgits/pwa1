@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner PWA</title>
-
     <link rel="manifest" href="manifest.json">
-    
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,23 +31,17 @@
     <h1>QR Code Scanner</h1>
 
     <button id="start-scan-btn">Start QR Scan</button>
-    
-    <!-- Video element for camera preview -->
     <video id="preview"></video>
-    
-    <!-- Result div to display the scanned text -->
     <div id="result">Scanned text will appear here</div>
 
-    <!-- Link to Instascan library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
+    <!-- Load instascan.min.js from the local directory -->
+    <script src="js/instascan.min.js"></script>
 
-    <!-- QR Code scanner logic -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
 
             scanner.addListener('scan', function(content) {
-                // Display the result in the result div
                 document.getElementById("result").textContent = `Scanned Text: ${content}`;
                 scanner.stop(); // Stop scanning after a successful scan
             });
@@ -56,7 +49,7 @@
             function startScanner() {
                 Instascan.Camera.getCameras().then(function (cameras) {
                     if (cameras.length > 0) {
-                        scanner.start(cameras[0]); // Start with the first available camera
+                        scanner.start(cameras[0]);
                     } else {
                         alert('No cameras found.');
                     }
@@ -66,7 +59,6 @@
                 });
             }
 
-            // Start scanner on button click
             document.getElementById("start-scan-btn").addEventListener("click", startScanner);
         });
     </script>
