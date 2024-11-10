@@ -41,4 +41,34 @@
     <!-- Result div to display the scanned text -->
     <div id="result">Scanned text will appear here</div>
 
-    <!-- ZXing library for QR code scan
+    <!-- ZXing library for QR code scanning -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxing/1.4.0/zxing.min.js"></script>
+
+    <!-- QR Code scanner logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Initialize the ZXing QR code reader
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            const previewElement = document.getElementById("preview");
+
+            function startScanner() {
+                // Start the scanner, using the first available camera
+                codeReader.decodeFromVideoDevice(null, previewElement, (result, err) => {
+                    if (result) {
+                        // Display the decoded text from the QR code
+                        document.getElementById("result").textContent = `Scanned Text: ${result.text}`;
+                        codeReader.reset(); // Stop scanning after a successful scan
+                    }
+                    if (err) {
+                        console.warn(err); // Optional: log errors during scanning
+                    }
+                });
+            }
+
+            // Add an event listener to start the scanner when the button is clicked
+            document.getElementById("start-scan-btn").addEventListener("click", startScanner);
+        });
+    </script>
+
+</body>
+</html>
