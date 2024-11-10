@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner PWA</title>
-    
-    <!-- Link to PWA manifest file -->
+
     <link rel="manifest" href="manifest.json">
     
-    <!-- Basic styling (optional) -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,7 +15,7 @@
             align-items: center;
             margin-top: 50px;
         }
-        #qr-reader {
+        #preview {
             width: 300px;
             height: 300px;
             margin-top: 20px;
@@ -33,44 +31,38 @@
 
     <h1>QR Code Scanner</h1>
 
-    <!-- Button to start scanning -->
     <button id="start-scan-btn">Start QR Scan</button>
-
-    <!-- QR reader div where the camera feed will appear -->
-    <div id="qr-reader"></div>
-
+    
+    <!-- Video element for camera preview -->
+    <video id="preview"></video>
+    
     <!-- Result div to display the scanned text -->
     <div id="result">Scanned text will appear here</div>
 
-    <!-- Link to the html5-qrcode library (you can use a CDN or local file) -->
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <!-- Link to Instascan library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/instascan/1.0.0/instascan.min.js"></script>
 
     <!-- QR Code scanner logic -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const qrCodeReader = new Html5Qrcode("qr-reader");
+            let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
 
-            function onScanSuccess(decodedText, decodedResult) {
+            scanner.addListener('scan', function(content) {
                 // Display the result in the result div
-                document.getElementById("result").textContent = `Scanned Text: ${decodedText}`;
-                qrCodeReader.stop(); // Stop the scanner after a successful scan
-            }
-
-            function onScanFailure(error) {
-                // Optionally handle scan errors here
-                console.warn(`QR Code scan error: ${error}`);
-            }
+                document.getElementById("result").textContent = `Scanned Text: ${content}`;
+                scanner.stop(); // Stop scanning after a successful scan
+            });
 
             function startScanner() {
-                // Request camera access and start the QR code scanner
-                qrCodeReader.start(
-                    { facingMode: "environment" }, // Use the back camera on mobile devices
-                    { fps: 10, qrbox: 250 },       // Frames per second and scanning box size
-                    onScanSuccess,                 // Success callback
-                    onScanFailure                  // Error callback
-                ).catch(error => {
-                    console.error("Camera start failed:", error);
-                    alert("Failed to access the camera. Please check permissions.");
+                Instascan.Camera.getCameras().then(function (cameras) {
+                    if (cameras.length > 0) {
+                        scanner.start(cameras[0]); // Start with the first available camera
+                    } else {
+                        alert('No cameras found.');
+                    }
+                }).catch(function (e) {
+                    console.error(e);
+                    alert("Camera access error. Check permissions.");
                 });
             }
 
