@@ -31,19 +31,13 @@
 
     <h1>QR Code Scanner</h1>
 
-    <!-- Button to start scanning -->
     <button id="start-scan-btn">Start QR Scan</button>
-
-    <!-- Video element for the camera preview -->
     <div id="preview"></div>
-
-    <!-- Result div to display the scanned text -->
     <div id="result">Scanned text will appear here</div>
 
-    <!-- Include html5-qrcode library from CDN -->
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <!-- Reference the local JS file -->
+    <script src="js/html5-qrcode.min.js"></script>
 
-    <!-- QR Code scanner logic -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const previewElement = document.getElementById("preview");
@@ -51,22 +45,19 @@
             function startScanner() {
                 const qrCodeScanner = new Html5Qrcode("preview");
 
-                // Start scanning using the back camera
                 qrCodeScanner.start(
-                    { facingMode: "environment" }, // facingMode specifies the back camera
-                    { fps: 10, qrbox: 250 }, // Set FPS and QR scanning box size
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: 250 },
                     (decodedText, decodedResult) => {
-                        // On successful scan, display the decoded text
                         document.getElementById("result").textContent = `Scanned Text: ${decodedText}`;
-                        qrCodeScanner.stop(); // Stop scanning after a successful scan
+                        qrCodeScanner.stop();
                     },
                     (errorMessage) => {
-                        console.warn(errorMessage); // Log any errors (optional)
+                        console.warn(errorMessage);
                     }
                 );
             }
 
-            // Add an event listener to the button to start scanning when clicked
             document.getElementById("start-scan-btn").addEventListener("click", startScanner);
         });
     </script>
