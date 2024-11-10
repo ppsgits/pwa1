@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner PWA</title>
 
-    <!-- Link to PWA manifest file -->
     <link rel="manifest" href="manifest.json">
     
     <style>
@@ -36,36 +35,38 @@
     <button id="start-scan-btn">Start QR Scan</button>
 
     <!-- Video element for the camera preview -->
-    <video id="preview" width="300" height="300"></video>
-    
+    <div id="preview"></div>
+
     <!-- Result div to display the scanned text -->
     <div id="result">Scanned text will appear here</div>
 
-    <!-- ZXing library for QR code scanning -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxing/1.4.0/zxing.min.js"></script>
+    <!-- Include html5-qrcode library from CDN -->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 
     <!-- QR Code scanner logic -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Initialize the ZXing QR code reader
-            const codeReader = new ZXing.BrowserQRCodeReader();
             const previewElement = document.getElementById("preview");
 
             function startScanner() {
-                // Start the scanner, using the first available camera
-                codeReader.decodeFromVideoDevice(null, previewElement, (result, err) => {
-                    if (result) {
-                        // Display the decoded text from the QR code
-                        document.getElementById("result").textContent = `Scanned Text: ${result.text}`;
-                        codeReader.reset(); // Stop scanning after a successful scan
+                const qrCodeScanner = new Html5Qrcode("preview");
+
+                // Start scanning using the back camera
+                qrCodeScanner.start(
+                    { facingMode: "environment" }, // facingMode specifies the back camera
+                    { fps: 10, qrbox: 250 }, // Set FPS and QR scanning box size
+                    (decodedText, decodedResult) => {
+                        // On successful scan, display the decoded text
+                        document.getElementById("result").textContent = `Scanned Text: ${decodedText}`;
+                        qrCodeScanner.stop(); // Stop scanning after a successful scan
+                    },
+                    (errorMessage) => {
+                        console.warn(errorMessage); // Log any errors (optional)
                     }
-                    if (err) {
-                        console.warn(err); // Optional: log errors during scanning
-                    }
-                });
+                );
             }
 
-            // Add an event listener to start the scanner when the button is clicked
+            // Add an event listener to the button to start scanning when clicked
             document.getElementById("start-scan-btn").addEventListener("click", startScanner);
         });
     </script>
