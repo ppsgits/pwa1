@@ -1,17 +1,22 @@
 {
-    "name": "QR Code Scanner",
-    "short_name": "QR Scanner",
-    "description": "Scan QR codes and display the raw text",
-    "start_url": "/",
+    "name": "Chat with Google Sheets",
+    "short_name": "ChatPWA",
+    "description": "A simple PWA that interacts with Google Sheets through a chat interface.",
+    "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#f4f4f4",
+    "background_color": "#ffffff",
     "theme_color": "#4CAF50",
     "icons": [
-        {
-            "src": "/icon.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        }
+      {
+        "src": "images/icon.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "images/icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
     ]
-}
-
+  }
+  
