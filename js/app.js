@@ -1,45 +1,19 @@
-// Initialize the Google API Client
-gapi.load('client:auth2', initClient);
+// Initialize the conversation on page load
+window.onload = startConversation;
 
-function initClient() {
-    gapi.client.init({
-        apiKey: 'YOUR_API_KEY',
-        clientId: 'YOUR_CLIENT_ID',
-        discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-        scope: "https://www.googleapis.com/auth/spreadsheets"
-    }).then(function() {
-        gapi.auth2.getAuthInstance().signIn().then(function() {
-            console.log('Signed in');
-            appendDataToSheet();
-        });
-    });
+// Function to start the chat with the initial prompt
+function startConversation() {
+    displayMessage("Please select: 1. Register, 2. Check Payment, 3. Other", 'bot');
 }
 
-function appendDataToSheet() {
-    const sheetId = 'YOUR_SHEET_ID';
-    const range = 'Sheet1!A1:B1';  // Adjust based on your sheet's structure
-    const values = [["User", "Input"]];  // Change as needed based on form data
-
-    const body = {
-        values: values
-    };
-
-    gapi.client.sheets.spreadsheets.values.append({
-        spreadsheetId: sheetId,
-        range: range,
-        valueInputOption: 'RAW',
-        resource: body
-    }).then((response) => {
-        console.log('Data written to sheet: ', response);
-    });
-}
-
+// Function to handle sending the user's message
 function sendMessage() {
     const userMessage = document.getElementById("user-input").value;
     displayMessage(userMessage, 'user');
     processUserInput(userMessage);
 }
 
+// Function to display a message in the chat interface
 function displayMessage(message, sender) {
     const messageElement = document.createElement("div");
     messageElement.textContent = message;
@@ -47,7 +21,20 @@ function displayMessage(message, sender) {
     document.getElementById("messages").appendChild(messageElement);
 }
 
+// Function to process the user's input and provide a response based on the selected option
 function processUserInput(input) {
-    displayMessage("Processing your input...", 'bot');
-    setTimeout(() => displayMessage("Thank you for your input!", 'bot'), 1000);
+    const userMessage = input.trim();
+
+    let botResponse;
+    if (userMessage === "1") {
+        botResponse = "You chose to Register. Please provide your name and email.";
+    } else if (userMessage === "2") {
+        botResponse = "You chose to Check Payment. Please enter your payment ID to continue.";
+    } else if (userMessage === "3") {
+        botResponse = "You selected 'Other.' Please describe your query, and I’ll do my best to help.";
+    } else {
+        botResponse = "I'm sorry, I didn't understand that. Please select: 1. Register, 2. Check Payment, 3. Other";
+    }
+
+    displayMessage(botResponse, 'bot');
 }
